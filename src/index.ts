@@ -3,9 +3,9 @@ import http from 'http';
 import path from 'path';
 import cors from 'cors';
 import env from 'dotenv';
-import authRoutes from './src/routes/AuthRoutes';
+import authRoutes from './routes/AuthRoutes';
 
-import connectToMongo from './src/db/db';
+import connectToMongo from './db/db';
 env.config();
 
 const app = express();
