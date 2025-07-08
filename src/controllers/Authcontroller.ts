@@ -4,7 +4,7 @@ import { protect } from '../middleware/middleware';
 
 const API_KEY = process.env.TWO_FACTOR_API_KEY;
 
-export const sendOtp = async (req, res) => {
+export const sendOtp = async (req: any, res: any) => {
   const { phone } = req.body;
   try {
     const apiUrl = `https://2factor.in/API/V1/${API_KEY}/SMS/${phone}/AUTOGEN`;
@@ -17,12 +17,12 @@ export const sendOtp = async (req, res) => {
     } else {
       res.status(400).json({ error: 'Failed to send OTP', details: data.Details });
     }
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ error: 'Failed to send OTP', details: err.message });
   }
 };
 
-export const verifyOtp = async (req, res) => {
+export const verifyOtp = async (req: any, res: any) => {
   const { phone, sessionId, otp } = req.body;
   try {
     const apiUrl = `https://2factor.in/API/V1/${API_KEY}/SMS/VERIFY/${sessionId}/${otp}`;
@@ -39,7 +39,11 @@ export const verifyOtp = async (req, res) => {
         await user.save();
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) {
+        throw new Error('JWT_SECRET is not defined in environment variables');
+      }
+      const token = jwt.sign({ userId: user._id }, jwtSecret, {
         expiresIn: '1h',
       });
 
@@ -47,7 +51,7 @@ export const verifyOtp = async (req, res) => {
     } else {
       return res.status(400).json({ error: 'Invalid OTP', details: data.Details });
     }
-  } catch (err) {
+  } catch (err: any) {
     res.status(500).json({ error: 'OTP verification failed', details: err.message });
   }
 };
