@@ -1,6 +1,9 @@
 import User from '../model/user';
 import jwt from 'jsonwebtoken';
+import Lead from "../model/user";
+
 import { protect } from '../middleware/middleware';
+import { Request, Response } from "express";
 
 const API_KEY = process.env.TWO_FACTOR_API_KEY;
 
@@ -56,7 +59,15 @@ export const verifyOtp = async (req: any, res: any) => {
   }
 };
 
-
+export const createLead = async (req: Request, res: Response) => {
+  try {
+    const newLead = new Lead(req.body);
+    await newLead.save();
+    res.status(201).json({ message: "Lead created", lead: newLead });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to create lead" });
+  }
+};
 // import { protect } from '../middleware/authMiddleware.js';
 
 // router.get('/profile', protect, async (req, res) => {
