@@ -3,8 +3,8 @@ import Property from '../model/Property';
 
 // -------------------- Add Property --------------------
 export const addProperty = async (req: Request, res: Response): Promise<void> => {
+     console.log("Inside addProperty Controller");
     console.log("REQ BODY:", req.body);
-
     try {
         const {
             title,
@@ -50,21 +50,21 @@ export const addProperty = async (req: Request, res: Response): Promise<void> =>
 
 
 // -------------------- Create Property (Generic) --------------------
-export const createProperty = async (req: Request, res: Response): Promise<void> => {
-    console.log("REQ BODY:", req.body);
-    try {
-        const newProperty = new Property(req.body);
-        await newProperty.save();
-        res.status(201).json(newProperty);
-    } catch (error) {
-        console.error(error);
-        if (error instanceof Error) {
-            res.status(400).json({ message: error.message });
-        } else {
-            res.status(400).json({ message: "An unknown error occurred" });
-        }
-    }
-};
+// export const createProperty = async (req: Request, res: Response): Promise<void> => {
+//     console.log("REQ BODY:", req.body);
+//     try {
+//         const newProperty = new Property(req.body);
+//         await newProperty.save();
+//         res.status(201).json(newProperty);
+//     } catch (error) {
+//         console.error(error);
+//         if (error instanceof Error) {
+//             res.status(400).json({ message: error.message });
+//         } else {
+//             res.status(400).json({ message: "An unknown error occurred" });
+//         }
+//     }
+// };
 
 
 // -------------------- Get All Properties --------------------
