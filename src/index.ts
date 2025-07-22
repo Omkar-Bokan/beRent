@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import propertyRoutes from './routes/propertyRoutes';
 
 import authRoutes from './routes/AuthRoutes';
 import leadRoutes from './routes/LeadRoutes';
@@ -25,7 +26,8 @@ app.use("/public", express.static(path.join(__dirname, "data"))); // If you serv
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', profileRoutes); // Admin profile related routes
+app.use('/api/admin', profileRoutes);
+app.use('/api/properties', propertyRoutes);
 
 // Make sure to create these files:
 // app.use('/api/properties', propertyRoutes);
