@@ -9,4 +9,5 @@ const profileSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now }
 });
 
-export default mongoose.model("Profile", profileSchema);
+
+export const Profile = mongoose.model("Profile", profileSchema);

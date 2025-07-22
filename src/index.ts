@@ -8,7 +8,7 @@ import authRoutes from './routes/AuthRoutes';
 import leadRoutes from './routes/LeadRoutes';
 import profileRoutes from './routes/Profile';
 import bedRoutes from './routes/BedsRoutes'
-
+import adminProfileRoutes from './routes/AdminRoutes'
 import connectToMongo from './db/db';
 
 dotenv.config();
@@ -24,7 +24,8 @@ app.use("/public", express.static(path.join(__dirname, "data")));
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/admin', profileRoutes);
+app.use('/api/admin', adminProfileRoutes);
+app.use('/api/users', profileRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/beds', bedRoutes);
 app.use('/api/payments', paymentRoutes);

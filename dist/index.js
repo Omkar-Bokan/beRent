@@ -13,6 +13,7 @@ const AuthRoutes_1 = __importDefault(require("./routes/AuthRoutes"));
 const LeadRoutes_1 = __importDefault(require("./routes/LeadRoutes"));
 const Profile_1 = __importDefault(require("./routes/Profile"));
 const BedsRoutes_1 = __importDefault(require("./routes/BedsRoutes"));
+const AdminRoutes_1 = __importDefault(require("./routes/AdminRoutes"));
 const db_1 = __importDefault(require("./db/db"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -23,7 +24,8 @@ app.use(express_1.default.json());
 app.use("/public", express_1.default.static(path_1.default.join(__dirname, "data")));
 // API Routes
 app.use('/api/auth', AuthRoutes_1.default);
-app.use('/api/admin', Profile_1.default);
+app.use('/api/admin', AdminRoutes_1.default);
+app.use('/api/users', Profile_1.default);
 app.use('/api/properties', propertyRoutes_1.default);
 app.use('/api/beds', BedsRoutes_1.default);
 app.use('/api/payments', Payment_1.default);
