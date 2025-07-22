@@ -1,24 +1,8 @@
 "use strict";
-// import express from 'express';
-// import {
-//     createProfile,
-//     getProfiles,
-//     getProfileById,
-//     updateProfile,
-//     deleteProfile
-// } from '../controllers/Profile';
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// const router = express.Router();
-// router.post('create', createProfile);
-// router.get('/profile', getProfiles);
-// router.get('/:id', getProfileById);
-// router.put('/profile', updateProfile);
-// router.delete('/:id', deleteProfile);
-// export default router;
-// src/routes/Profile.ts
 const express_1 = __importDefault(require("express"));
 const Profile_1 = require("../controllers/Profile");
 const router = express_1.default.Router(); // <--- THIS IS THE KEY!

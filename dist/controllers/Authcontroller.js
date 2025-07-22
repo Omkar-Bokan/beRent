@@ -3,10 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createLead = exports.verifyOtp = exports.sendOtp = void 0;
+exports.verifyOtp = exports.sendOtp = void 0;
 const user_1 = __importDefault(require("../model/user"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const user_2 = __importDefault(require("../model/user"));
 const API_KEY = process.env.TWO_FACTOR_API_KEY;
 const sendOtp = async (req, res) => {
     const { phone } = req.body;
@@ -59,17 +58,6 @@ const verifyOtp = async (req, res) => {
     }
 };
 exports.verifyOtp = verifyOtp;
-const createLead = async (req, res) => {
-    try {
-        const newLead = new user_2.default(req.body);
-        await newLead.save();
-        res.status(201).json({ message: "Lead created", lead: newLead });
-    }
-    catch (error) {
-        res.status(500).json({ error: "Failed to create lead" });
-    }
-};
-exports.createLead = createLead;
 // import { protect } from '../middleware/authMiddleware.js';
 // router.get('/profile', protect, async (req, res) => {
 //   const user = await User.findById(req.user.userId);

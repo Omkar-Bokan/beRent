@@ -11,8 +11,8 @@ const router = express.Router();
 
 
 router.route('/')
-    .post(createBed) // POST /api/beds - Create a new bed
-    .get(getAllBeds); // GET /api/beds - Get all beds
+    .post(createBed)
+    .get(getAllBeds);
 
 router.route('/:id')
     .get(getBedById) // GET /api/beds/:id - Get a single bed by ID

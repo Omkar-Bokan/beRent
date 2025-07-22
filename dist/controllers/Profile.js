@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProfiles = exports.deleteProfileById = exports.updateProfileById = exports.getProfileById = exports.createProfile = exports.updateAdminProfile = exports.getAdminProfile = void 0;
 const profile_1 = __importDefault(require("../model/profile"));
-const mongoose_1 = __importDefault(require("mongoose")); // Import mongoose to check for ObjectId validity
+const mongoose_1 = __importDefault(require("mongoose"));
 // Assuming there's only ONE admin profile (e.g., with a specific 'Super Admin' role)
 // Or you could fetch it by a known fixed ID if you seed one in your DB.
 const ADMIN_PROFILE_ID = 'your_fixed_admin_profile_id_here'; // If you have one, otherwise query by role

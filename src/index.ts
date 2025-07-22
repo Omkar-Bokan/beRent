@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import propertyRoutes from './routes/propertyRoutes';
-
+import paymentRoutes from './routes/Payment'
 import authRoutes from './routes/AuthRoutes';
 import leadRoutes from './routes/LeadRoutes';
 import profileRoutes from './routes/Profile';
@@ -27,7 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', profileRoutes);
 app.use('/api/properties', propertyRoutes);
 app.use('/api/beds', bedRoutes);
-// app.use('/api/payments', paymentRoutes);
+app.use('/api/payments', paymentRoutes);
 
 app.use('/api/leads', leadRoutes);
 

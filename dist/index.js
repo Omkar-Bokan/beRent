@@ -5,30 +5,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
-const dotenv_1 = __importDefault(require("dotenv")); // Use dotenv instead of 'env'
-const path_1 = __importDefault(require("path")); // Only if you need static files
+const dotenv_1 = __importDefault(require("dotenv"));
+const path_1 = __importDefault(require("path"));
+const propertyRoutes_1 = __importDefault(require("./routes/propertyRoutes"));
+const Payment_1 = __importDefault(require("./routes/Payment"));
 const AuthRoutes_1 = __importDefault(require("./routes/AuthRoutes"));
-// import leadRoutes from './routes/LeadRoutes'; // <--- ASSUME YOU CREATE THIS FILE
+const LeadRoutes_1 = __importDefault(require("./routes/LeadRoutes"));
 const Profile_1 = __importDefault(require("./routes/Profile"));
-// IMPORT OTHER ROUTES HERE (e.g., propertyRoutes, bedRoutes, paymentRoutes)
+const BedsRoutes_1 = __importDefault(require("./routes/BedsRoutes"));
 const db_1 = __importDefault(require("./db/db"));
-dotenv_1.default.config(); // Load environment variables
+dotenv_1.default.config();
 const app = (0, express_1.default)();
-(0, db_1.default)(); // Connect to MongoDB
-const PORT = process.env.PORT || 5000; // Common port for APIs is 5000 or 8000
-// Middleware
-app.use((0, cors_1.default)()); // Enable CORS for all origins (adjust in production)
-app.use(express_1.default.json()); // Body parser for JSON data
-// app.use(express.urlencoded({ extended: true })); // For URL-encoded data if needed
-app.use("/public", express_1.default.static(path_1.default.join(__dirname, "data"))); // If you serve static files
+(0, db_1.default)();
+const PORT = process.env.PORT || 5000;
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+app.use("/public", express_1.default.static(path_1.default.join(__dirname, "data")));
 // API Routes
 app.use('/api/auth', AuthRoutes_1.default);
-app.use('/api/admin', Profile_1.default); // Admin profile related routes
-// Make sure to create these files:
-// app.use('/api/properties', propertyRoutes);
-// app.use('/api/beds', bedRoutes);
-// app.use('/api/payments', paymentRoutes);
-app.use('/api/leads', AuthRoutes_1.default); // Correctly mapped to LeadRoutes
+app.use('/api/admin', Profile_1.default);
+app.use('/api/properties', propertyRoutes_1.default);
+app.use('/api/beds', BedsRoutes_1.default);
+app.use('/api/payments', Payment_1.default);
+app.use('/api/leads', LeadRoutes_1.default);
 // Basic root route
 app.get("/", (req, res) => {
     res.send("FriendlyAbode API is running!");
