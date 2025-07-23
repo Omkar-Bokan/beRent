@@ -47,25 +47,30 @@ const LeadSchema = new mongoose_1.Schema({
     source: { type: String, required: true },
     status: { type: String, enum: ['new', 'contacted', 'interested', 'qualified', 'converted', 'not_interested'], default: 'new' }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret;
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret;
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
-// Explicitly define the 'id' virtual (often not needed as Mongoose does it implicitly)
-// LeadSchema.virtual('id').get(function() {
-//   return this._id.toHexString();
-// });
-// Set toJSON options to include virtuals
-LeadSchema.set('toJSON', {
-    virtuals: true
-});
-// If you also want to remove __v, you can add a transform here,
-// which essentially brings us back to the previous recommended method.
-// LeadSchema.set('toJSON', {
-//   virtuals: true,
-//   transform: (doc, ret) => {
-//     ret.id = ret._id.toString(); // Ensure 'id' is always there if _id exists
-//     delete ret._id;             // Remove the original _id field
-//     delete ret.__v;             // Remove the version key
-//     return ret;
-//   }
-// });
 exports.Lead = mongoose_1.default.model('Lead', LeadSchema);

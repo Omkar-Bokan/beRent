@@ -12,6 +12,9 @@ export interface IAdminProfile extends Document {
     avatar: string;
     createdAt: Date;
     updatedAt: Date;
+
+    // _id?: mongoose.Types.ObjectId;
+    // __v?: number;
 }
 
 const adminProfileSchema: Schema<IAdminProfile> = new mongoose.Schema({
@@ -47,28 +50,34 @@ const adminProfileSchema: Schema<IAdminProfile> = new mongoose.Schema({
     totalBeds: { type: Number, default: 0 },
     avatar: { type: String, default: '' }
 }, {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
-    // *** IMPORTANT: Add the toJSON configuration here ***
+    timestamps: true,
     toJSON: {
-        virtuals: true, // Ensure virtuals (like the default 'id') are included
+        virtuals: true,
         transform: (doc, ret) => {
-            // Map _id to id and remove _id and __v from the response
-            // ret.id = ret._id.toString(); // Convert ObjectId to string for 'id'
-            // delete ret._id;             // Remove the original _id field
-            // delete ret.__v;             // Remove the version key
-            // return ret;
+
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
         }
     },
-    // You might also want to add this for explicit .toObject() calls
-    //     toObject: {
-    //         virtuals: true,
-    //         transform: (doc, ret) => {
-    //             ret.id = ret._id.toString();
-    //             delete ret._id;
-    //             delete ret.__v;
-    //             return ret;
-    //     }
-    // }
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
 
 export const AdminProfile = mongoose.model<IAdminProfile>('AdminProfile', adminProfileSchema);

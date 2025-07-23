@@ -19,25 +19,30 @@ const PropertySchema = new mongoose_1.default.Schema({
     amenities: [{ type: String }] // Defines an array of strings
 }, {
     timestamps: true,
-    // *** Add toJSON/toObject options for _id to id transformation ***
     toJSON: {
         virtuals: true,
-        // transform: (doc, ret) => {
-        //     ret.id = ret._id.toString();
-        //     delete ret._id;
-        //     delete ret.__v;
-        //     return ret;
-        // }
+        transform: (doc, ret) => {
+            const transformedRet = ret;
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
     },
-    // toObject: {
-    //     virtuals: true,
-    //     transform: (doc, ret) => {
-    //         ret.id = ret._id.toString();
-    //         delete ret._id;
-    //         delete ret.__v;
-    //         return ret;
-    //     }
-    // }
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret;
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
 exports.Property = mongoose_1.default.model('Property', PropertySchema);
 // It's generally better to use named exports for models

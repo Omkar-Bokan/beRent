@@ -1,6 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-// Define the interface for your Lead document
 export interface ILead extends Document {
     name: string;
     phone: string;
@@ -14,13 +13,9 @@ export interface ILead extends Document {
     status: 'new' | 'contacted' | 'interested' | 'qualified' | 'converted' | 'not_interested';
     createdAt: Date;
     updatedAt: Date;
-}
 
-export interface ILead extends Document {
-    name: string;
-    // ... other properties
-    createdAt: Date;
-    updatedAt: Date;
+    // _id?: mongoose.Types.ObjectId;
+    // __v?: number;
 }
 
 const LeadSchema: Schema<ILead> = new Schema({
@@ -35,29 +30,34 @@ const LeadSchema: Schema<ILead> = new Schema({
     source: { type: String, required: true },
     status: { type: String, enum: ['new', 'contacted', 'interested', 'qualified', 'converted', 'not_interested'], default: 'new' }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
-
-// Explicitly define the 'id' virtual (often not needed as Mongoose does it implicitly)
-// LeadSchema.virtual('id').get(function() {
-//   return this._id.toHexString();
-// });
-
-// Set toJSON options to include virtuals
-LeadSchema.set('toJSON', {
-    virtuals: true
-});
-
-// If you also want to remove __v, you can add a transform here,
-// which essentially brings us back to the previous recommended method.
-// LeadSchema.set('toJSON', {
-//   virtuals: true,
-//   transform: (doc, ret) => {
-//     ret.id = ret._id.toString(); // Ensure 'id' is always there if _id exists
-//     delete ret._id;             // Remove the original _id field
-//     delete ret.__v;             // Remove the version key
-//     return ret;
-//   }
-// });
 
 export const Lead = mongoose.model<ILead>('Lead', LeadSchema);
