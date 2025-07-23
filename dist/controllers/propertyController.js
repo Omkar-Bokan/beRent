@@ -1,12 +1,9 @@
 "use strict";
 // import { Request, Response } from 'express';
 // import Property from '../model/Property';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updatePropertyStatus = exports.updateProperty = exports.getPropertyById = exports.getProperties = exports.createProperty = void 0;
-const Property_1 = __importDefault(require("../model/Property"));
+const Property_1 = require("../model/Property");
 const createProperty = async (req, res) => {
     console.log("Inside createProperty Controller");
     console.log("REQ BODY:", req.body);
@@ -16,7 +13,7 @@ const createProperty = async (req, res) => {
         if (!title || !location || !address || !rentRange || !totalBeds || !monthlyRevenue || !contactPerson || !contactPhone || !status || !description) {
             return res.status(400).json({ message: "All required fields are missing. Please provide title, location, address, rentRange, totalBeds, monthlyRevenue, contactPerson, contactPhone, status, and description." });
         }
-        const newProperty = new Property_1.default({
+        const newProperty = new Property_1.Property({
             title,
             location,
             address,
@@ -56,7 +53,7 @@ exports.createProperty = createProperty;
 // Get all properties
 const getProperties = async (req, res) => {
     try {
-        const properties = await Property_1.default.find({});
+        const properties = await Property_1.Property.find({});
         res.status(200).json({
             success: true,
             count: properties.length,
@@ -76,7 +73,7 @@ exports.getProperties = getProperties;
 // Get a single property by ID
 const getPropertyById = async (req, res) => {
     try {
-        const property = await Property_1.default.findById(req.params.id);
+        const property = await Property_1.Property.findById(req.params.id);
         if (!property) {
             return res.status(404).json({
                 success: false,
@@ -107,7 +104,7 @@ exports.getPropertyById = getPropertyById;
 // Update an existing property by ID
 const updateProperty = async (req, res) => {
     try {
-        const property = await Property_1.default.findByIdAndUpdate(req.params.id, req.body, {
+        const property = await Property_1.Property.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         });
@@ -164,7 +161,7 @@ const updatePropertyStatus = async (req, res) => {
                 message: `Invalid status value. Allowed values are: ${allowedStatuses.join(', ')}.`
             });
         }
-        const property = await Property_1.default.findByIdAndUpdate(req.params.id, { status: status }, // Only update the status field
+        const property = await Property_1.Property.findByIdAndUpdate(req.params.id, { status: status }, // Only update the status field
         {
             new: true, // Return the updated document
             runValidators: true // Run schema validators (especially for enum)

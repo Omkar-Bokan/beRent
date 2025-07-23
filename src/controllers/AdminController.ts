@@ -1,10 +1,10 @@
-// src/controllers/AdminProfileController.ts
 import { Request, Response } from 'express';
-import { AdminProfile } from '../model/Admin';
+import { AdminProfile } from '../model/Admin'
+
 export const getAdminProfile = async (req: Request, res: Response) => {
     console.log('--- DEBUG: Inside getAdminProfile controller ---');
     try {
-        const profile = await AdminProfile.findOne({}); // Find the first (and ideally only) admin profile
+        const profile = await AdminProfile.findOne({});
 
         if (!profile) {
             console.log('--- DEBUG: Admin Profile not found, returning 404. ---');
@@ -21,7 +21,6 @@ export const getAdminProfile = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error('--- ERROR: Error fetching admin profile in getAdminProfile:', error);
-        // A CastError here would be highly unusual for findOne({}) unless DB data is corrupt.
         if (error.name === 'CastError') {
             return res.status(400).json({
                 success: false,
@@ -36,11 +35,9 @@ export const getAdminProfile = async (req: Request, res: Response) => {
 };
 
 // Create an admin profile
-// This endpoint is for initial setup, typically only allows one profile to be created.
 export const createAdminProfile = async (req: Request, res: Response) => {
     console.log('--- DEBUG: Inside createAdminProfile controller ---');
     try {
-        // Prevent creating multiple admin profiles
         const existingProfile = await AdminProfile.findOne({});
         if (existingProfile) {
             return res.status(409).json({
@@ -51,7 +48,6 @@ export const createAdminProfile = async (req: Request, res: Response) => {
 
         const { name, email, phone, role } = req.body;
 
-        // Basic server-side validation for required fields
         if (!name || !email || !phone || !role) {
             return res.status(400).json({
                 success: false,
@@ -68,7 +64,7 @@ export const createAdminProfile = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error('--- ERROR: Error creating admin profile:', error);
-        if (error.code === 11000) { // Duplicate key error (e.g., email or phone unique constraint)
+        if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
                 error: 'A profile with this email or phone number already exists.'
@@ -89,14 +85,13 @@ export const createAdminProfile = async (req: Request, res: Response) => {
 };
 
 // Update the admin profile
-// This endpoint expects no ID in the URL, it finds and updates the first/only admin profile.
 export const updateAdminProfile = async (req: Request, res: Response) => {
     console.log('--- DEBUG: Inside updateAdminProfile controller ---');
     try {
         const profile = await AdminProfile.findOneAndUpdate(
-            {}, // Query to find the document (e.g., find the first one)
-            req.body, // Data to update
-            { new: true, runValidators: true } // Return the updated document, run schema validators
+            {},
+            req.body,
+            { new: true, runValidators: true }
         );
 
         if (!profile) {
@@ -114,8 +109,6 @@ export const updateAdminProfile = async (req: Request, res: Response) => {
     } catch (error: any) {
         console.error('--- ERROR: Error updating admin profile:', error);
         if (error.name === 'CastError') {
-            // This error typically occurs when Mongoose tries to cast an invalid value
-            // in req.body to a specific type, or if a malformed _id is somehow involved.
             return res.status(400).json({
                 success: false,
                 error: 'Invalid data format provided for update.'

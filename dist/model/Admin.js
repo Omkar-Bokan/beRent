@@ -13,13 +13,13 @@ const adminProfileSchema = new mongoose_1.default.Schema({
     email: {
         type: String,
         required: [true, 'Email is required.'],
-        unique: true, // Email should be unique for the admin profile
+        unique: true,
         match: [/.+@.+\..+/, 'Please use a valid email address.']
     },
     phone: {
         type: String,
         required: [true, 'Phone number is required.'],
-        unique: true // Phone number should also be unique
+        unique: true
     },
     role: {
         type: String,
@@ -34,11 +34,31 @@ const adminProfileSchema = new mongoose_1.default.Schema({
         type: Date,
         default: Date.now
     },
-    // Optional fields for statistics or avatar, not directly from initial form
     properties: { type: Number, default: 0 },
     totalBeds: { type: Number, default: 0 },
     avatar: { type: String, default: '' }
 }, {
-    timestamps: true // Adds createdAt and updatedAt
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    // *** IMPORTANT: Add the toJSON configuration here ***
+    toJSON: {
+        virtuals: true, // Ensure virtuals (like the default 'id') are included
+        transform: (doc, ret) => {
+            // Map _id to id and remove _id and __v from the response
+            // ret.id = ret._id.toString(); // Convert ObjectId to string for 'id'
+            // delete ret._id;             // Remove the original _id field
+            // delete ret.__v;             // Remove the version key
+            // return ret;
+        }
+    },
+    // You might also want to add this for explicit .toObject() calls
+    //     toObject: {
+    //         virtuals: true,
+    //         transform: (doc, ret) => {
+    //             ret.id = ret._id.toString();
+    //             delete ret._id;
+    //             delete ret.__v;
+    //             return ret;
+    //     }
+    // }
 });
 exports.AdminProfile = mongoose_1.default.model('AdminProfile', adminProfileSchema);

@@ -13,15 +13,15 @@ const tenantDetailsSchema = new mongoose_1.default.Schema({
     rentAmount: { type: Number },
     securityDeposit: { type: Number },
     moveInDate: { type: Date },
-    moveOutDate: { type: Date } // Optional: for 'on notice' or after move-out
-}, { _id: false }); // Do not create a separate _id for the subdocument
+    moveOutDate: { type: Date }
+}, { _id: false }); // _id: false means this subdocument won't have its own _id
 // Define the main Bed schema
 const bedSchema = new mongoose_1.default.Schema({
     bedNumber: {
         type: String,
         required: [true, 'Bed number is required.'],
         unique: true,
-        trim: true // Remove whitespace from both ends of a string
+        trim: true
     },
     propertyId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
@@ -43,24 +43,44 @@ const bedSchema = new mongoose_1.default.Schema({
         required: [true, 'Bed status is required.']
     },
     tenantDetails: {
-        type: tenantDetailsSchema,
+        type: tenantDetailsSchema, // Use the sub-schema here
         default: {} // Default to an empty object if no tenant details
     }
 }, {
-    timestamps: true // Adds createdAt and updatedAt fields
+    timestamps: true, // Adds createdAt and updatedAt fields
+    // *** Add toJSON/toObject options for _id to id transformation ***
+    toJSON: {
+        virtuals: true,
+        // transform: (doc, ret) => {
+        //     ret.id = ret._id.toString();
+        //     delete ret._id;
+        //     delete ret.__v;
+        //     return ret;
+        // }
+    },
+    // toObject: {
+    //     virtuals: true,
+    //     transform: (doc, ret) => {
+    //         ret.id = ret._id.toString();
+    //         delete ret._id;
+    //         delete ret.__v;
+    //         return ret;
+    //     }
+    // }
 });
 // Pre-save hook for validation
 bedSchema.pre('save', function (next) {
     const requiredTenantFields = ['tenantName', 'tenantPhone', 'rentAmount', 'moveInDate'];
-    const tenantDetails = this.tenantDetails;
+    const tenantDetails = this.tenantDetails; // Directly use this.tenantDetails
     if (this.status === 'vacant' || this.status === 'maintenance') {
         // Clear tenant details if status becomes vacant or maintenance
-        this.tenantDetails = {};
+        this.tenantDetails = undefined; // Set to undefined to remove it completely or {} to empty
     }
     else if (this.status === 'occupied' || this.status === 'on notice') {
         // Validate required tenant details if status is occupied or on notice
         for (const field of requiredTenantFields) {
-            if (!tenantDetails || !tenantDetails[field]) {
+            // Check if tenantDetails exists and if the field is missing or empty string/null
+            if (!tenantDetails || tenantDetails[field] === null || tenantDetails[field] === undefined || (typeof tenantDetails[field] === 'string' && tenantDetails[field].trim() === '')) {
                 return next(new Error(`Tenant ${field} is required for status '${this.status}'.`));
             }
         }
@@ -69,9 +89,15 @@ bedSchema.pre('save', function (next) {
 });
 // Pre-findOneAndUpdate hook for 'findByIdAndUpdate' operations
 bedSchema.pre('findOneAndUpdate', async function (next) {
-    const update = this.getUpdate(); // Get the update payload
-    const query = this.getQuery(); // Get the query used to find the document
-    // Fetch the current document to check its status if not explicitly provided in update
+    const update = this.getUpdate();
+    const query = this.getQuery();
+    // Ensure update is an object before proceeding
+    if (typeof update !== 'object' || update === null) {
+        return next();
+    }
+    // Use $set to safely access update fields
+    const updateSet = ('$set' in update && typeof update.$set === 'object') ? update.$set : update;
+    // Fetch the current document if necessary
     let currentBed;
     try {
         currentBed = await this.model.findOne(query).select('status tenantDetails');
@@ -79,30 +105,25 @@ bedSchema.pre('findOneAndUpdate', async function (next) {
     catch (error) {
         return next(error);
     }
-    // Determine the new status from the update payload, or use current status if not updated
-    const hasSet = typeof update === 'object' && update !== null && '$set' in update && typeof update.$set === 'object';
-    const newStatus = hasSet && update.$set.status ? update.$set.status : (currentBed ? currentBed.status : null);
-    const tenantDetails = hasSet && update.$set.tenantDetails ? update.$set.tenantDetails : (currentBed ? currentBed.tenantDetails : {});
+    const newStatus = updateSet.status !== undefined ? updateSet.status : (currentBed ? currentBed.status : undefined);
+    const newTenantDetails = updateSet.tenantDetails !== undefined ? updateSet.tenantDetails : (currentBed ? currentBed.tenantDetails : {});
     const requiredTenantFields = ['tenantName', 'tenantPhone', 'rentAmount', 'moveInDate'];
     if (newStatus === 'vacant' || newStatus === 'maintenance') {
         // Clear tenant details if status becomes vacant or maintenance
-        if (typeof update === 'object' &&
-            update !== null &&
-            '$set' in update &&
-            typeof update.$set === 'object') {
-            update.$set.tenantDetails = {};
-        }
-        else if (typeof update === 'object' && update !== null) {
-            update.tenantDetails = {};
-        }
+        // Set tenantDetails to an empty object or undefined in the update payload
+        updateSet.tenantDetails = {}; // Explicitly clear in update operation
     }
     else if (newStatus === 'occupied' || newStatus === 'on notice') {
         // Validate required tenant details if status is occupied or on notice
         for (const field of requiredTenantFields) {
-            if (!tenantDetails[field]) {
+            if (!newTenantDetails || newTenantDetails[field] === null || newTenantDetails[field] === undefined || (typeof newTenantDetails[field] === 'string' && newTenantDetails[field].trim() === '')) {
                 return next(new Error(`Tenant ${field} is required for status '${newStatus}'.`));
             }
         }
+    }
+    // If update was not using $set, ensure the modified fields are correctly applied
+    if (!('$set' in update)) {
+        this.setUpdate(updateSet); // Re-set the update if modifications were made directly to `update`
     }
     next();
 });

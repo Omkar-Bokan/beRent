@@ -1,5 +1,4 @@
 import { sendOtp, verifyOtp } from '../controllers/Authcontroller';
-import Lead from '../model/user';
 import express, { Request, Response } from 'express';
 
 
@@ -10,14 +9,6 @@ const router = express.Router();
 router.post('/send-otp', sendOtp);
 router.post('/verify-otp', verifyOtp);
 
-router.post('/', (req, res) => {
-  const data = req.body;
-  const lead = new Lead(req.body);
-  const savedLead = lead.save();
-  res.status(201).json(savedLead);
-  console.log('Lead received:', data);
-  res.status(201).json({ message: 'Lead created successfully' });
-});
 
 router.get('/', async (req, res) => {
   res.json({ message: 'GET /api working!' });

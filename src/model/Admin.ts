@@ -1,6 +1,20 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const adminProfileSchema = new mongoose.Schema({
+// Define the interface for your AdminProfile document
+export interface IAdminProfile extends Document {
+    name: string;
+    email: string;
+    phone: string;
+    role: 'superadmin' | 'admin' | 'manager';
+    joinDate: Date;
+    properties: number;
+    totalBeds: number;
+    avatar: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+const adminProfileSchema: Schema<IAdminProfile> = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Admin name is required.']
@@ -8,13 +22,13 @@ const adminProfileSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required.'],
-        unique: true, // Email should be unique for the admin profile
+        unique: true,
         match: [/.+@.+\..+/, 'Please use a valid email address.']
     },
     phone: {
         type: String,
         required: [true, 'Phone number is required.'],
-        unique: true // Phone number should also be unique
+        unique: true
     },
     role: {
         type: String,
@@ -25,16 +39,36 @@ const adminProfileSchema = new mongoose.Schema({
         default: 'admin',
         required: [true, 'Role is required.']
     },
-    joinDate: { // This will be set automatically on creation
+    joinDate: {
         type: Date,
         default: Date.now
     },
-    // Optional fields for statistics or avatar, not directly from initial form
     properties: { type: Number, default: 0 },
     totalBeds: { type: Number, default: 0 },
     avatar: { type: String, default: '' }
 }, {
-    timestamps: true // Adds createdAt and updatedAt
+    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    // *** IMPORTANT: Add the toJSON configuration here ***
+    toJSON: {
+        virtuals: true, // Ensure virtuals (like the default 'id') are included
+        transform: (doc, ret) => {
+            // Map _id to id and remove _id and __v from the response
+            // ret.id = ret._id.toString(); // Convert ObjectId to string for 'id'
+            // delete ret._id;             // Remove the original _id field
+            // delete ret.__v;             // Remove the version key
+            // return ret;
+        }
+    },
+    // You might also want to add this for explicit .toObject() calls
+    //     toObject: {
+    //         virtuals: true,
+    //         transform: (doc, ret) => {
+    //             ret.id = ret._id.toString();
+    //             delete ret._id;
+    //             delete ret.__v;
+    //             return ret;
+    //     }
+    // }
 });
 
-export const AdminProfile = mongoose.model('AdminProfile', adminProfileSchema);
+export const AdminProfile = mongoose.model<IAdminProfile>('AdminProfile', adminProfileSchema);

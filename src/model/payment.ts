@@ -1,6 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const paymentSchema = new mongoose.Schema({
+// Define the interface for your Payment document
+export interface IPayment extends Document {
+    bedId: mongoose.Types.ObjectId;
+    propertyId: mongoose.Types.ObjectId;
+    tenantName: string;
+    amount: number;
+    paymentDate: Date;
+    status: 'paid' | 'pending' | 'overdue';
+    createdAt: Date;
+    updatedAt: Date;
+    // Add other fields here if you uncomment them in the schema
+    // paymentMethod?: string;
+    // transactionId?: string;
+    // notes?: string;
+}
+
+const paymentSchema: Schema<IPayment> = new mongoose.Schema({ // Add interface to schema
     bedId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Bed',
@@ -39,7 +55,26 @@ const paymentSchema = new mongoose.Schema({
     // transactionId: { type: String },
     // notes: { type: String }
 }, {
-    timestamps: true
+    timestamps: true,
+    // *** Add toJSON/toObject options for _id to id transformation ***
+    toJSON: {
+        virtuals: true,
+        // transform: (doc, ret) => {
+        //     ret.id = ret._id.toString();
+        //     delete ret._id;
+        //     delete ret.__v;
+        //     return ret;
+        // }
+    },
+    // toObject: {
+    //     virtuals: true,
+    //     transform: (doc, ret) => {
+    //         ret.id = ret._id.toString();
+    //         delete ret._id;
+    //         delete ret.__v;
+    //         return ret;
+    //     }
+    // }
 });
 
-export const Payment = mongoose.model('Payment', paymentSchema);
+export const Payment = mongoose.model<IPayment>('Payment', paymentSchema);

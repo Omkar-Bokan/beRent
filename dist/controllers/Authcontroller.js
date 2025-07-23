@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyOtp = exports.sendOtp = void 0;
-const user_1 = __importDefault(require("../model/user"));
+const user_1 = require("../model/user");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const API_KEY = process.env.TWO_FACTOR_API_KEY;
 const sendOtp = async (req, res) => {
@@ -32,9 +32,9 @@ const verifyOtp = async (req, res) => {
         const response = await fetch(apiUrl);
         const data = await response.json();
         if (data.Status === 'Success') {
-            let user = await user_1.default.findOne({ phone });
+            let user = await user_1.User.findOne({ phone });
             if (!user) {
-                user = await user_1.default.create({ phone, isVerified: true });
+                user = await user_1.User.create({ phone, isVerified: true });
             }
             else {
                 user.isVerified = true;

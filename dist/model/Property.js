@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Property = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const PropertySchema = new mongoose_1.default.Schema({
     title: { type: String, required: true },
@@ -15,9 +16,29 @@ const PropertySchema = new mongoose_1.default.Schema({
     contactPhone: { type: String, required: true },
     status: { type: String, required: true, enum: ['active', 'Inactive', 'Maintenance', 'Full', 'available soon'] },
     description: { type: String, required: true },
-    amenities: [{ type: String }]
+    amenities: [{ type: String }] // Defines an array of strings
 }, {
-    timestamps: true
+    timestamps: true,
+    // *** Add toJSON/toObject options for _id to id transformation ***
+    toJSON: {
+        virtuals: true,
+        // transform: (doc, ret) => {
+        //     ret.id = ret._id.toString();
+        //     delete ret._id;
+        //     delete ret.__v;
+        //     return ret;
+        // }
+    },
+    // toObject: {
+    //     virtuals: true,
+    //     transform: (doc, ret) => {
+    //         ret.id = ret._id.toString();
+    //         delete ret._id;
+    //         delete ret.__v;
+    //         return ret;
+    //     }
+    // }
 });
-const Property = mongoose_1.default.model('Property', PropertySchema);
-exports.default = Property;
+exports.Property = mongoose_1.default.model('Property', PropertySchema);
+// It's generally better to use named exports for models
+// export default Property; // You can keep this if you prefer default exports, but named is common with interfaces

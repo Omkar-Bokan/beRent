@@ -44,6 +44,25 @@ const paymentSchema = new mongoose_1.default.Schema({
     // transactionId: { type: String },
     // notes: { type: String }
 }, {
-    timestamps: true
+    timestamps: true,
+    // *** Add toJSON/toObject options for _id to id transformation ***
+    toJSON: {
+        virtuals: true,
+        // transform: (doc, ret) => {
+        //     ret.id = ret._id.toString();
+        //     delete ret._id;
+        //     delete ret.__v;
+        //     return ret;
+        // }
+    },
+    // toObject: {
+    //     virtuals: true,
+    //     transform: (doc, ret) => {
+    //         ret.id = ret._id.toString();
+    //         delete ret._id;
+    //         delete ret.__v;
+    //         return ret;
+    //     }
+    // }
 });
 exports.Payment = mongoose_1.default.model('Payment', paymentSchema);

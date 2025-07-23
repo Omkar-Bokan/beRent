@@ -223,7 +223,7 @@
 
 
 import { Request, Response } from 'express';
-import Property from '../model/Property';
+import {Property} from '../model/Property';
 
 export const createProperty = async (req: Request, res: Response) => {
     console.log("Inside createProperty Controller");
