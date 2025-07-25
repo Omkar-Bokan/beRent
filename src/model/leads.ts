@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface ILead extends Document {
+    id: string;
     name: string;
     phone: string;
     email: string;
@@ -13,9 +14,6 @@ export interface ILead extends Document {
     status: 'new' | 'contacted' | 'interested' | 'qualified' | 'converted' | 'not_interested';
     createdAt: Date;
     updatedAt: Date;
-
-    // _id?: mongoose.Types.ObjectId;
-    // __v?: number;
 }
 
 const LeadSchema: Schema<ILead> = new Schema({

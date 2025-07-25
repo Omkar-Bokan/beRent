@@ -1,26 +1,3 @@
-// import express from 'express';
-// import {
-//     createProperty,
-//     getProperties,
-//     getPropertyById,
-//     updateProperty,
-//     updatePropertyStatus
-// } from '../controllers/propertyController';
-
-// const router = express.Router();
-
-
-// router.route('/')
-//     .post(createProperty)
-//     .get(getProperties);
-// router.route('/:id')
-//     .get(getPropertyById)
-//     .put(updateProperty);
-
-// router.route('/:id/status')
-//     .patch(updatePropertyStatus);
-
-// export default router;
 
 import express from 'express';
 import {
@@ -28,20 +5,21 @@ import {
     getProperties,
     getPropertyById,
     updateProperty,
-    updatePropertyStatus
+    updatePropertyStatus,
+    deleteProperty,
+    upload,
+    uploadUpdate
 } from '../controllers/propertyController';
 
 const router = express.Router();
 
-router.route('/')
-    .post(createProperty)
-    .get(getProperties);
 
-router.route('/:id')
-    .get(getPropertyById)
-    .put(updateProperty);
+router.post('/', upload, createProperty);
+router.put('/:id', uploadUpdate, updateProperty);
 
-router.route('/:id/status')
-    .patch(updatePropertyStatus);
+router.get('/', getProperties);
+router.get('/:id', getPropertyById);
+router.patch('/status/:id', updatePropertyStatus);
+router.delete('/:id', deleteProperty);
 
 export default router;

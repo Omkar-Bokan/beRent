@@ -13,14 +13,13 @@ export interface ITenantDetails { // Exported for broader use if needed
 
 // Define the schema for tenant details
 const tenantDetailsSchema = new mongoose.Schema<ITenantDetails>({ // Add interface to schema
-    tenantName: { type: String },
-    tenantPhone: { type: String },
-    tenantEmail: { type: String },
-    rentAmount: { type: Number },
-    securityDeposit: { type: Number },
-    moveInDate: { type: Date },
-    moveOutDate: { type: Date }
-}, { _id: false }); // _id: false means this subdocument won't have its own _id
+    tenantName: { type: String, required: true, trim: true },
+    tenantPhone: { type: String, required: true, trim: true },
+    tenantEmail: { type: String, trim: true, lowercase: true, match: [/.+@.+\..+/, 'Please fill a valid email address'] },
+    rentAmount: { type: Number, required: true, min: 0 },
+    securityDeposit: { type: Number, default: 0, min: 0 },
+    moveInDate: { type: Date, default: Date.now }
+}, { _id: false })
 
 // Define the main Bed interface
 export interface IBed extends Document {
