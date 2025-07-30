@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateBed = exports.getBedById = exports.getAllBeds = exports.createBed = void 0;
-const beds_1 = require("../model/beds");
+const beds_1 = require("../model/beds"); // Ensure this path is correct
 const createBed = async (req, res) => {
     try {
         const bed = await beds_1.Bed.create(req.body);
@@ -36,8 +36,16 @@ exports.createBed = createBed;
 // Get all beds
 const getAllBeds = async (req, res) => {
     try {
+        console.log("--> [bedsController] Attempting to fetch all beds from DB..."); // Added log
         // Populate propertyId to get details of the associated property
         const beds = await beds_1.Bed.find({}).populate('propertyId', 'title location'); // Only fetch title and location of property
+        console.log(`--> [bedsController] Fetched ${beds.length} beds.`); // Added log
+        if (beds.length > 0) {
+            console.log("--> [bedsController] Example fetched bed (first one):", beds[0]); // Added log
+        }
+        else {
+            console.log("--> [bedsController] No beds found in the database."); // Added log for empty case
+        }
         res.status(200).json({
             success: true,
             count: beds.length,
@@ -45,7 +53,7 @@ const getAllBeds = async (req, res) => {
         });
     }
     catch (error) {
-        console.error('Error fetching all beds:', error);
+        console.error('--> [bedsController] Error fetching all beds:', error); // Updated error log
         res.status(500).json({
             success: false,
             error: 'Server Error: Could not retrieve beds.'

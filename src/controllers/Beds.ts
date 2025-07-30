@@ -1,4 +1,4 @@
-import { Bed } from '../model/beds'
+import { Bed } from '../model/beds' // Ensure this path is correct
 import { Request, Response } from "express";
 
 export const createBed = async (req: Request, res: Response) => {
@@ -34,15 +34,23 @@ export const createBed = async (req: Request, res: Response) => {
 // Get all beds
 export const getAllBeds = async (req: Request, res: Response) => {
     try {
+        console.log("--> [bedsController] Attempting to fetch all beds from DB..."); // Added log
         // Populate propertyId to get details of the associated property
         const beds = await Bed.find({}).populate('propertyId', 'title location'); // Only fetch title and location of property
+        console.log(`--> [bedsController] Fetched ${beds.length} beds.`); // Added log
+        if (beds.length > 0) {
+            console.log("--> [bedsController] Example fetched bed (first one):", beds[0]); // Added log
+        } else {
+            console.log("--> [bedsController] No beds found in the database."); // Added log for empty case
+        }
+
         res.status(200).json({
             success: true,
             count: beds.length,
             data: beds
         });
     } catch (error) {
-        console.error('Error fetching all beds:', error);
+        console.error('--> [bedsController] Error fetching all beds:', error); // Updated error log
         res.status(500).json({
             success: false,
             error: 'Server Error: Could not retrieve beds.'
