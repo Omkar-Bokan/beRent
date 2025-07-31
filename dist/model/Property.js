@@ -15,10 +15,12 @@ const PropertySchema = new mongoose_1.default.Schema({
     monthlyRevenue: { type: Number, required: true },
     contactPerson: { type: String, required: true },
     contactPhone: { type: String, required: true },
+    minRent: { type: Number, required: true },
+    maxRent: { type: Number, required: true },
     status: { type: String, required: true, enum: ['active', 'Inactive', 'Maintenance', 'Full', 'available soon'] },
     description: { type: String, required: true },
     amenities: [{ type: String }],
-    images: [{ type: String }] // <--- ADD THIS LINE to the schema
+    images: [{ type: String }]
 }, {
     timestamps: true,
     toJSON: {

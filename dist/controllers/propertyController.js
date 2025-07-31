@@ -50,9 +50,7 @@ exports.uploadUpdate = (0, multer_1.default)({
     limits: {
         fileSize: 1024 * 1024 * 5 // 5MB file size limit
     }
-}).array('newImages', 3); // 'newImages' is the field name for newly uploaded images during update, max 3
-// --- Property Controllers ---
-// Create a new property and its associated beds
+}).array('newImages', 3);
 const createProperty = async (req, res) => {
     console.log("Inside createProperty Controller");
     console.log("REQ BODY:", req.body);
@@ -381,10 +379,6 @@ const deleteProperty = async (req, res) => {
         // --- NEW: Implement Cascading Deletion for associated records ---
         // Delete all beds associated with this property
         await beds_1.Bed.deleteMany({ propertyId: id });
-        // Uncomment the line below if you have a Payment model and want to delete associated payments
-        // await Payment.deleteMany({ propertyId: id });
-        // --- END CASCADING DELETION ---
-        // Now delete the property itself
         await Property_1.Property.findByIdAndDelete(id);
         // Delete associated image files from the file system
         property.images?.forEach(imgUrl => {

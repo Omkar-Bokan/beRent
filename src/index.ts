@@ -5,12 +5,12 @@ import path from 'path';
 import propertyRoutes from './routes/propertyRoutes';
 import paymentRoutes from './routes/Payment'
 import authRoutes from './routes/AuthRoutes';
+import googleRoutes from './routes/auth'
 import leadRoutes from './routes/LeadRoutes';
 import profileRoutes from './routes/Profile';
 import bedRoutes from './routes/BedsRoutes'
 import adminProfileRoutes from './routes/AdminRoutes'
 import connectToMongo from './db/db';
-
 dotenv.config();
 
 const app = express();
@@ -26,7 +26,8 @@ app.use("/public", express.static(path.join(__dirname, "data")));
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
 
-app.use('/api/auth', authRoutes);
+// app.use('/api/auth', authRoutes);
+app.use('/api/auth', googleRoutes);
 app.use('/api/admin', adminProfileRoutes);
 app.use('/api/users', profileRoutes);
 app.use('/api/properties', propertyRoutes);

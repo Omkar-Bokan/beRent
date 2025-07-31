@@ -6,14 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Profile = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const profileSchema = new mongoose_1.default.Schema({
-    phone: { type: Number, required: true, unique: true }, // Consider String for phone numbers
+    phone: { type: String, unique: true, sparse: true }, // Made optional, unique, and sparse
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     role: { type: String, default: 'user' },
     photo: { type: String },
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now }, // Keep if needed, otherwise remove
+    preferences: {
+        budget: { type: String }, // Made optional
+        location: { type: String }, // Made optional
+        occupancy: { type: String } // Made optional
+    },
+    firebaseUid: { type: String, unique: true, sparse: true } // Add firebaseUid field
 }, {
-    timestamps: true, // Assuming you want timestamps for user profiles too
+    timestamps: true, // Automatically adds createdAt and updatedAt
     toJSON: {
         virtuals: true,
         transform: (doc, ret) => {
