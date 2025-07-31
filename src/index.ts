@@ -1,8 +1,7 @@
-// src/app.ts
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path'; // Make sure path is imported
+import path from 'path'; 
 import propertyRoutes from './routes/propertyRoutes';
 import paymentRoutes from './routes/Payment'
 import authRoutes from './routes/AuthRoutes';

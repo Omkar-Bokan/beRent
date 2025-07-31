@@ -59,8 +59,7 @@ const createProperty = async (req, res) => {
     const uploadedFiles = req?.files;
     console.log("Uploaded Files:", uploadedFiles);
     try {
-        const { title, location, address, rentRange, totalBeds, // This will be used to create beds
-        monthlyRevenue, contactPerson, contactPhone, status, description, amenities } = req.body;
+        const { title, location, address, rentRange, totalBeds, monthlyRevenue, contactPerson, contactPhone, status, description, amenities } = req.body;
         // Basic validation for required fields
         if (!title || !location || !address || !rentRange || !totalBeds || !monthlyRevenue || !contactPerson || !contactPhone || !status || !description) {
             // If validation fails, delete any uploaded files
@@ -91,7 +90,7 @@ const createProperty = async (req, res) => {
             location,
             address,
             rentRange,
-            totalBeds: parsedTotalBeds, // Store the parsed number
+            totalBeds: parsedTotalBeds,
             monthlyRevenue,
             contactPerson,
             contactPhone,

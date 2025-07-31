@@ -13,10 +13,10 @@ export interface ITenantDetails { // Exported for broader use if needed
 
 // Define the schema for tenant details
 const tenantDetailsSchema = new mongoose.Schema<ITenantDetails>({ // Add interface to schema
-    tenantName: { type: String, required: true, trim: true },
-    tenantPhone: { type: String, required: true, trim: true },
+    tenantName: { type: String,  trim: true }, //required: true,
+    tenantPhone: { type: String,  trim: true },
     tenantEmail: { type: String, trim: true, lowercase: true, match: [/.+@.+\..+/, 'Please fill a valid email address'] },
-    rentAmount: { type: Number, required: true, min: 0 },
+    rentAmount: { type: Number, min: 0 },
     securityDeposit: { type: Number, default: 0, min: 0 },
     moveInDate: { type: Date, default: Date.now }
 }, { _id: false })
@@ -47,7 +47,7 @@ const bedSchema = new mongoose.Schema<IBed>({ // Add interface to schema
     },
     roomNumber: {
         type: String,
-        required: [true, 'Room number is required.'],
+        // re\quired: [true, 'Room number is required.'],
         trim: true
     },
     status: {
@@ -59,10 +59,7 @@ const bedSchema = new mongoose.Schema<IBed>({ // Add interface to schema
         default: 'vacant',
         required: [true, 'Bed status is required.']
     },
-    tenantDetails: {
-        type: tenantDetailsSchema, // Use the sub-schema here
-        default: {} // Default to an empty object if no tenant details
-    }
+    tenantDetails: tenantDetailsSchema,
 }, {
     timestamps: true, // Adds createdAt and updatedAt fields
     toJSON: {

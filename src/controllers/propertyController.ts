@@ -67,7 +67,7 @@ export const createProperty = async (req: Request, res: Response) => {
             location,
             address,
             rentRange,
-            totalBeds, // This will be used to create beds
+            totalBeds, 
             monthlyRevenue,
             contactPerson,
             contactPhone,
@@ -107,7 +107,7 @@ export const createProperty = async (req: Request, res: Response) => {
             location,
             address,
             rentRange,
-            totalBeds: parsedTotalBeds, // Store the parsed number
+            totalBeds: parsedTotalBeds, 
             monthlyRevenue,
             contactPerson,
             contactPhone,
