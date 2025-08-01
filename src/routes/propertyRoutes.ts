@@ -12,15 +12,15 @@ import {
 
 const router = express.Router();
 
-// Route to create a new property with image uploads
-// 'upload' middleware processes 'images' field from FormData
+// Route to create a new property with image uploads.
+// The controller will now parse the 'rentRange' string from the body.
 router.post('/', upload, createProperty);
 
-// Route to update an existing property with new image uploads
-// 'uploadUpdate' middleware processes 'newImages' field from FormData
+// Route to update an existing property with new image uploads.
+// The controller will also parse the 'rentRange' string from the body.
 router.put('/:id', uploadUpdate, updateProperty);
 
-// Route to get all properties
+// Route to get all properties with support for filtering and sorting via query parameters.
 router.get('/', getProperties);
 
 // Route to get a single property by ID

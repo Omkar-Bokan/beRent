@@ -107,9 +107,6 @@ export const getProfiles = async (req: Request, res: Response) => {
     }
 };
 
-// --- Moved Google Authentication Controllers (now in auth.ts) ---
-// These functions will be moved to a new auth controller file for better separation.
-// Keeping them here temporarily for reference if you haven't created the new file yet.
 
 export const googleAuthCallback = async (req: Request, res: Response) => {
     const { uid, email, displayName, photoURL } = req.body;

@@ -2,9 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePayment = exports.updatePayment = exports.getPaymentById = exports.getAllPayments = exports.createPayment = void 0;
 const payment_1 = require("../model/payment");
+const PaymentHistory_1 = require("../model/PaymentHistory");
 const createPayment = async (req, res) => {
     try {
+        // First, create the payment document in the main collection
         const payment = await payment_1.Payment.create(req.body);
+        // --- NEW: Create a payment history entry ---
+        await PaymentHistory_1.PaymentHistory.create({
+            tenantName: payment.tenantName,
+            propertyId: payment.propertyId,
+            bedId: payment.bedId,
+            amount: payment.amount,
+            paymentDate: payment.paymentDate,
+            status: payment.status
+        });
+        console.log(`Payment for '${payment.tenantName}' recorded and history logged.`);
         res.status(201).json({
             success: true,
             message: "Payment recorded successfully.",
@@ -27,7 +39,8 @@ const createPayment = async (req, res) => {
     }
 };
 exports.createPayment = createPayment;
-// Get all payments
+// The rest of your paymentController functions remain unchanged
+// ... getAllPayments, getPaymentById, updatePayment, deletePayment
 const getAllPayments = async (req, res) => {
     try {
         // Populate bedId and propertyId for more context

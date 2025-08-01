@@ -463,11 +463,10 @@
 //     }
 // };
 
-
-
 import { Request, Response } from 'express';
-import { Property, IProperty } from '../model/Property';
+import { Property, IProperty } from '../model/Property'; // Assuming IProperty is defined in Property.ts
 import { Bed } from '../model/beds'; // Import the Bed model
+// import { Payment } from '../model/payments'; // Uncomment if you have a Payment model and want to cascade payments
 
 import multer from 'multer';
 import path from 'path';
@@ -476,7 +475,7 @@ import fs from 'fs';
 // --- Multer Configuration ---
 const uploadsDir = path.join(__dirname, '../../uploads'); // Adjust path as needed
 if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true }); 
+    fs.mkdirSync(uploadsDir, { recursive: true }); // Ensure directory exists, create recursively if needed
 }
 
 const storage = multer.diskStorage({
@@ -512,7 +511,7 @@ export const uploadUpdate = multer({
     limits: {
         fileSize: 1024 * 1024 * 5 // 5MB file size limit
     }
-}).array('newImages', 3);
+}).array('newImages', 3); 
 
 // Helper function to parse frontend price range string into min/max numbers
 const parseRentRangeString = (rentRangeString: string) => {
@@ -557,7 +556,6 @@ const parseRentRangeString = (rentRangeString: string) => {
     return { minRent: min, maxRent: max };
 };
 
-
 export const createProperty = async (req: Request, res: Response) => {
     console.log("Inside createProperty Controller");
     console.log("REQ BODY:", req.body);
@@ -570,7 +568,7 @@ export const createProperty = async (req: Request, res: Response) => {
             location,
             address,
             rentRange: rentRangeString, // Renamed from original rentRange for clarity
-            totalBeds,
+            totalBeds, 
             monthlyRevenue,
             contactPerson,
             contactPhone,
@@ -582,9 +580,9 @@ export const createProperty = async (req: Request, res: Response) => {
         // Parse rentRange string into minRent and maxRent numbers
         const { minRent, maxRent } = parseRentRangeString(rentRangeString);
 
-        // Basic validation for required fields, including the new numerical rent fields
-        // Check if minRent or maxRent parsing resulted in null (indicating a critical parsing error)
+        // Basic validation for required fields
         if (!title || !location || !address || minRent === null || maxRent === null || !totalBeds || !monthlyRevenue || !contactPerson || !contactPhone || !status || !description) {
+            // If validation fails, delete any uploaded files
             uploadedFiles.forEach(file => {
                 fs.unlink(file.path, (err) => {
                     if (err) console.error("Error deleting file after validation error:", err);
@@ -594,7 +592,7 @@ export const createProperty = async (req: Request, res: Response) => {
         }
 
         // Validate totalBeds as a positive number
-        const parsedTotalBeds = parseInt(totalBeds as string, 10);
+        const parsedTotalBeds = parseInt(totalBeds as string, 10); // Use radix 10 for parseInt
         if (isNaN(parsedTotalBeds) || parsedTotalBeds <= 0) {
             uploadedFiles.forEach(file => {
                 fs.unlink(file.path, (err) => {
@@ -612,11 +610,11 @@ export const createProperty = async (req: Request, res: Response) => {
             title,
             location,
             address,
-            minRent, // Use the parsed numerical values
-            maxRent, // Use the parsed numerical values
-            totalBeds: parsedTotalBeds,
+            rentRange: rentRangeString,
+            minRent,
+            maxRent,
+            totalBeds: parsedTotalBeds, 
             monthlyRevenue,
-            // minRent, maxRent ,
             contactPerson,
             contactPhone,
             status,
@@ -627,8 +625,7 @@ export const createProperty = async (req: Request, res: Response) => {
 
         // Save the property to get its _id
         await newProperty.save();
-        console.log("New property saved with ID:", newProperty.id);
-
+ console.log("New property saved with ID:", newProperty.id);
         // --- Create Beds associated with this new property ---
         const bedsToCreate = [];
         for (let i = 1; i <= parsedTotalBeds; i++) {
@@ -676,66 +673,71 @@ export const getProperties = async (req: Request, res: Response) => {
     try {
         const { search, area, price: priceFilterString, occupancy, sortBy, requirement } = req.query;
 
-        // Initialize an empty query object for Mongoose
-        let query: any = {};
+        // Initialize an array of conditions for Mongoose $and operator
+        let conditions: any[] = [];
         let sort: any = {};
 
-        // 1. Search Term (Full-text search)
+        // 1. Search Term (Full-text search across multiple fields)
         if (search && typeof search === 'string') {
-            query.$or = [
-                { title: { $regex: search, $options: 'i' } },
-                { location: { $regex: search, $options: 'i' } },
-                { address: { $regex: search, $options: 'i' } },
-                { description: { $regex: search, $options: 'i' } }
-            ];
+            conditions.push({
+                $or: [
+                    { title: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' } },
+                    { address: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } }
+                ]
+            });
         }
 
-        // 2. Area Filter
+        // 2. Area Filter (Location)
         if (area && typeof area === 'string') {
-            query.location = { $regex: area, $options: 'i' }; // Case-insensitive exact match
+            conditions.push({ location: { $regex: area, $options: 'i' } });
         }
 
         // 3. Price Filter (using minRent/maxRent fields from DB)
-        console.log("---priceFilterString",priceFilterString);
-        
         if (priceFilterString && typeof priceFilterString === 'string') {
             const { minRent: filterMinPrice, maxRent: filterMaxPrice } = parseRentRangeString(priceFilterString);
 
             if (filterMinPrice !== null && filterMaxPrice !== null) {
-                 query = {
-                $and: [
-            { maxRent: { $gte: filterMinPrice } },
-            { minRent: { $lte: filterMaxPrice } }
-        ]
-    };
+                // Corrected: Push price conditions into the conditions array
+                conditions.push(
+                    { maxRent: { $gte: filterMinPrice } },
+                    { minRent: { $lte: filterMaxPrice } }
+                );
             } else {
                 console.warn("Skipping price filter due to invalid parsed range for:", priceFilterString);
             }
         }
 
-        // 4. Occupancy Filter
+        // 4. Occupancy Filter (totalBeds)
         if (occupancy && typeof occupancy === 'string') {
             let bedsCount: number | undefined;
-            switch (occupancy) {
-                case 'Single': bedsCount = 1; break;
-                case 'Double': bedsCount = 2; break;
-                case 'Triple': bedsCount = 3; break;
-                case 'Quad': bedsCount = 4; break;
+            switch (occupancy.toLowerCase()) {
+                case 'single': bedsCount = 1; break;
+                case 'double': bedsCount = 2; break;
+                case 'triple': bedsCount = 3; break;
+                case 'quad': bedsCount = 4; break;
                 // Add more cases if needed
             }
             if (bedsCount !== undefined) {
-                query.totalBeds = bedsCount; // Assuming totalBeds is the correct field for occupancy
+                conditions.push({ totalBeds: bedsCount });
             }
         }
 
-        // 5. Quick Requirement (similar to search, can be combined or prioritized)
+        // 5. Quick Requirement
         if (requirement && typeof requirement === 'string') {
-            // Combine with existing $or or create new if not present
-            query.$or = query.$or || [];
-            query.$or.push(
-                { description: { $regex: requirement, $options: 'i' } },
-                { title: { $regex: requirement, $options: 'i' } }
-            );
+            conditions.push({
+                $or: [
+                    { description: { $regex: requirement, $options: 'i' } },
+                    { title: { $regex: requirement, $options: 'i' } }
+                ]
+            });
+        }
+        
+        // Construct the final query object
+        let query: any = {};
+        if (conditions.length > 0) {
+            query.$and = conditions;
         }
 
         // 6. Sorting
@@ -745,10 +747,8 @@ export const getProperties = async (req: Request, res: Response) => {
             } else if (sortBy === 'price-high') {
                 sort.minRent = -1; // Sort by the minimum rent in descending order
             }
-            // 'relevance' doesn't usually have a direct MongoDB sort field
-            // unless you implement text indexing and scoring, so no specific sort here.
         }
-
+        
         console.log("Final MongoDB Query:", JSON.stringify(query));
         console.log("Final MongoDB Sort:", JSON.stringify(sort));
 
@@ -813,7 +813,7 @@ export const updateProperty = async (req: Request, res: Response) => {
             title,
             location,
             address,
-            rentRange: rentRangeString, // Renamed from original rentRange
+            rentRange: rentRangeString,
             totalBeds,
             monthlyRevenue,
             contactPerson,
@@ -821,7 +821,7 @@ export const updateProperty = async (req: Request, res: Response) => {
             status,
             description,
             amenities,
-            existingImages // This will be an array of image URLs to keep from the frontend
+            existingImages
         } = req.body;
 
         const property = await Property.findById(id);
@@ -840,13 +840,11 @@ export const updateProperty = async (req: Request, res: Response) => {
         }
 
         // Parse rentRange string for update
-        console.log("----rentRangeString",rentRangeString);
-        
         const { minRent: updatedMinRent, maxRent: updatedMaxRent } = parseRentRangeString(rentRangeString);
 
         if (updatedMinRent === null || updatedMaxRent === null) {
             newUploadedFiles.forEach(file => { fs.unlink(file.path, (err) => { if (err) console.error("Error deleting new file after rentRange parsing error:", err); }); });
-            return res.status(400).json({ message: "Invalid rent range format provided for update." });
+            return res.status(400).json({ success: false, message: "Invalid rent range format provided for update." });
         }
 
         // Prepare the updated data. Ensure numbers are parsed correctly.
@@ -854,8 +852,9 @@ export const updateProperty = async (req: Request, res: Response) => {
             title,
             location,
             address,
-            minRent: updatedMinRent, // Use updated numerical values
-            maxRent: updatedMaxRent, // Use updated numerical values
+            // rentRange: rentRangeString,
+            minRent: updatedMinRent,
+            maxRent: updatedMaxRent,
             totalBeds: parseInt(totalBeds as string, 10) || 0,
             monthlyRevenue: parseInt(monthlyRevenue as string, 10) || 0,
             contactPerson,
@@ -868,17 +867,12 @@ export const updateProperty = async (req: Request, res: Response) => {
         // Handle images: Combine existing images (that were not removed) and new uploads
         let finalImages: string[] = [];
 
-        // Add existing images that were explicitly sent back from frontend
         if (existingImages) {
-            // Ensure existingImages is treated as an array, even if it's a single string
             finalImages = Array.isArray(existingImages) ? existingImages : [existingImages];
         }
-
-        // Add new uploaded images
         const newImagePaths = newUploadedFiles.map(file => `/uploads/${file.filename}`);
         finalImages = [...finalImages, ...newImagePaths];
 
-        // Validate total images count before proceeding
         if (finalImages.length > 3) {
             newUploadedFiles.forEach(file => {
                 fs.unlink(file.path, (err) => {
@@ -888,30 +882,27 @@ export const updateProperty = async (req: Request, res: Response) => {
             return res.status(400).json({ success: false, message: "Maximum 3 images allowed in total." });
         }
 
-        // Identify images to delete (those present in DB but not in finalImages received from frontend)
         const imagesToDelete = property.images?.filter(imgUrl => !finalImages.includes(imgUrl)) || [];
 
-        // Delete old physical files that are no longer part of the property
         imagesToDelete.forEach(imgUrl => {
-            const filename = path.basename(imgUrl); // Get just the filename from the URL
+            const filename = path.basename(imgUrl);
             const filePath = path.join(uploadsDir, filename);
             fs.unlink(filePath, (err) => {
                 if (err) console.error(`Error deleting old image file ${filePath}:`, err);
             });
         });
 
-        updatedData.images = finalImages; // Update the images array in the document
+        updatedData.images = finalImages;
 
-        // Update the property in the database
         const updatedProperty = await Property.findByIdAndUpdate(id, updatedData, {
-            new: true, // Return the updated document
-            runValidators: true // Run schema validators on update
+            new: true,
+            runValidators: true
         });
 
         if (!updatedProperty) {
             return res.status(404).json({
                 success: false,
-                message: "Property not found after update attempt." // Should ideally not happen if found initially
+                message: "Property not found after update attempt."
             });
         }
 
@@ -922,7 +913,6 @@ export const updateProperty = async (req: Request, res: Response) => {
         });
     } catch (error: any) {
         console.error("Error updating property:", error);
-        // If an error occurs, delete any newly uploaded files
         newUploadedFiles.forEach(file => {
             fs.unlink(file.path, (err) => {
                 if (err) console.error("Error deleting new file after update DB error:", err);
@@ -962,7 +952,7 @@ export const updatePropertyStatus = async (req: Request, res: Response) => {
             });
         }
 
-        const allowedStatuses = ['active', 'Inactive', 'Maintenance', 'Full', 'available soon'];
+        const allowedStatuses = ['active', 'inactive', 'maintenance', 'full', 'available soon'];
         if (!allowedStatuses.includes(status)) {
             return res.status(400).json({
                 success: false,
@@ -1029,12 +1019,10 @@ export const deleteProperty = async (req: Request, res: Response) => {
             });
         }
 
-        // --- Cascading Deletion for associated records ---
+        // --- NEW: Implement Cascading Deletion for associated records ---
         // Delete all beds associated with this property
         await Bed.deleteMany({ propertyId: id });
-        // If you have a Payment model and payments are tied to property, uncomment this:
-        // await Payment.deleteMany({ propertyId: id });
-
+    
         await Property.findByIdAndDelete(id);
 
         // Delete associated image files from the file system

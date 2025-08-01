@@ -1,9 +1,24 @@
 // src/controllers/paymentController.ts
 import { Request, Response } from 'express';
 import { Payment } from '../model/payment';
+import { PaymentHistory } from '../model/PaymentHistory'
+
 export const createPayment = async (req: Request, res: Response) => {
     try {
+        // First, create the payment document in the main collection
         const payment = await Payment.create(req.body);
+
+        // --- NEW: Create a payment history entry ---
+        await PaymentHistory.create({
+            tenantName: payment.tenantName,
+            propertyId: payment.propertyId,
+            bedId: payment.bedId,
+            amount: payment.amount,
+            paymentDate: payment.paymentDate,
+            status: payment.status
+        });
+        console.log(`Payment for '${payment.tenantName}' recorded and history logged.`);
+        
         res.status(201).json({
             success: true,
             message: "Payment recorded successfully.",
@@ -24,8 +39,8 @@ export const createPayment = async (req: Request, res: Response) => {
         });
     }
 };
-
-// Get all payments
+// The rest of your paymentController functions remain unchanged
+// ... getAllPayments, getPaymentById, updatePayment, deletePayment
 export const getAllPayments = async (req: Request, res: Response) => {
     try {
         // Populate bedId and propertyId for more context
