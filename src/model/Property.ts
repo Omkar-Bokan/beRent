@@ -6,7 +6,7 @@ export interface IProperty extends Document {
   title: string;
   location: string;
   address: string;
-//   rentRange: string; 
+  rentRange: string; 
   minRent: number; // CRITICAL: Must be type number
   maxRent: number; // CRITICAL: Must be type number
   totalBeds: number;
@@ -33,7 +33,7 @@ const PropertySchema: Schema<IProperty> = new mongoose.Schema({
    title: { type: String, required: true, trim: true },
   location: { type: String, required: true, trim: true },
   address: { type: String, required: true, trim: true },
-//   rentRange: { type: String }, 
+  rentRange: { type: String }, 
   minRent: { type: Number, required: true }, 
   maxRent: { type: Number, required: true }, 
   totalBeds: { type: Number, required: true, min: 1 },

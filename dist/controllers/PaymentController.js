@@ -1,4 +1,30 @@
 "use strict";
+// src/controllers/paymentController.ts
+// import { Request, Response } from 'express';
+// import { Payment } from '../model/payment';
+// export const createPayment = async (req: Request, res: Response) => {
+//     try {
+//         const payment = await Payment.create(req.body);
+//         res.status(201).json({
+//             success: true,
+//             message: "Payment recorded successfully.",
+//             data: payment
+//         });
+//     } catch (error: any) {
+//         console.error('Error creating payment:', error);
+//         if (error.name === 'ValidationError') {
+//             const messages = Object.values(error.errors).map((val: any) => val.message);
+//             return res.status(400).json({
+//                 success: false,
+//                 error: messages
+//             });
+//         }
+//         res.status(500).json({
+//             success: false,
+//             error: 'Server Error: Could not record payment.'
+//         });
+//     }
+// };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deletePayment = exports.updatePayment = exports.getPaymentById = exports.getAllPayments = exports.createPayment = void 0;
 const payment_1 = require("../model/payment");

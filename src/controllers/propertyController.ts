@@ -464,10 +464,8 @@
 // };
 
 import { Request, Response } from 'express';
-import { Property, IProperty } from '../model/Property'; // Assuming IProperty is defined in Property.ts
-import { Bed } from '../model/beds'; // Import the Bed model
-// import { Payment } from '../model/payments'; // Uncomment if you have a Payment model and want to cascade payments
-
+import { Property, IProperty } from '../model/Property'; 
+import { Bed } from '../model/beds'; 
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -630,8 +628,8 @@ export const createProperty = async (req: Request, res: Response) => {
         const bedsToCreate = [];
         for (let i = 1; i <= parsedTotalBeds; i++) {
             bedsToCreate.push({
-                propertyId: newProperty._id,
-                bedNumber: `Bed ${i}`, // Example naming convention
+                propertyId: newProperty.id,
+                bedNumber: `${newProperty.id}-Bed ${i}`, // Example naming convention
                 status: 'vacant',       // Initial status
                 tenantDetails: {}       // Empty tenant details initially
             });

@@ -36,7 +36,34 @@ const TenantHistorySchema: Schema<ITenantHistory> = new mongoose.Schema({
     default: Date.now 
   }
 }, {
-  timestamps: true
+  timestamps: true,
+   toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
 
 export const TenantHistory = mongoose.model<ITenantHistory>('TenantHistory', TenantHistorySchema);

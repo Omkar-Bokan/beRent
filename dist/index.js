@@ -9,6 +9,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
 const propertyRoutes_1 = __importDefault(require("./routes/propertyRoutes"));
 const Payment_1 = __importDefault(require("./routes/Payment"));
+const HistoryRoutes_1 = __importDefault(require("./routes/HistoryRoutes"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const LeadRoutes_1 = __importDefault(require("./routes/LeadRoutes"));
 const Profile_1 = __importDefault(require("./routes/Profile"));
@@ -32,6 +33,7 @@ app.use('/api/properties', propertyRoutes_1.default);
 app.use('/api/beds', BedsRoutes_1.default);
 app.use('/api/payments', Payment_1.default);
 app.use('/api/leads', LeadRoutes_1.default);
+app.use('/api', HistoryRoutes_1.default);
 // Basic root route
 app.get("/", (req, res) => {
     res.send("FriendlyAbode API is running!");

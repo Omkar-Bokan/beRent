@@ -40,7 +40,7 @@ const PropertySchema = new mongoose_1.default.Schema({
     title: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
     address: { type: String, required: true, trim: true },
-    //   rentRange: { type: String }, 
+    rentRange: { type: String },
     minRent: { type: Number, required: true },
     maxRent: { type: Number, required: true },
     totalBeds: { type: Number, required: true, min: 1 },

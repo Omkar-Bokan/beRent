@@ -42,7 +42,34 @@ const PaymentHistorySchema: Schema<IPaymentHistory> = new mongoose.Schema({
       default: 'pending'
   }
 }, {
-  timestamps: true
+  timestamps: true,
+   toJSON: {
+        virtuals: true,
+        transform: (doc, ret) => {
+
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    },
+    toObject: {
+        virtuals: true,
+        transform: (doc, ret) => {
+            const transformedRet = ret as any;
+
+            if (transformedRet._id) {
+                transformedRet.id = transformedRet._id.toString();
+            }
+            delete transformedRet._id;
+            delete transformedRet.__v;
+            return transformedRet;
+        }
+    }
 });
 
 export const PaymentHistory = mongoose.model<IPaymentHistory>('PaymentHistory', PaymentHistorySchema);

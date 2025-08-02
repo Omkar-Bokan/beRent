@@ -8,9 +8,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProperty = exports.updatePropertyStatus = exports.updateProperty = exports.getPropertyById = exports.getProperties = exports.createProperty = exports.uploadUpdate = exports.upload = void 0;
-const Property_1 = require("../model/Property"); // Assuming IProperty is defined in Property.ts
-const beds_1 = require("../model/beds"); // Import the Bed model
-// import { Payment } from '../model/payments'; // Uncomment if you have a Payment model and want to cascade payments
+const Property_1 = require("../model/Property");
+const beds_1 = require("../model/beds");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -151,8 +150,8 @@ const createProperty = async (req, res) => {
         const bedsToCreate = [];
         for (let i = 1; i <= parsedTotalBeds; i++) {
             bedsToCreate.push({
-                propertyId: newProperty._id,
-                bedNumber: `Bed ${i}`, // Example naming convention
+                propertyId: newProperty.id,
+                bedNumber: `${newProperty.id}-Bed ${i}`, // Example naming convention
                 status: 'vacant', // Initial status
                 tenantDetails: {} // Empty tenant details initially
             });

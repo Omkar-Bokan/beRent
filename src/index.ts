@@ -5,6 +5,7 @@ import path from 'path';
 import propertyRoutes from './routes/propertyRoutes';
 import paymentRoutes from './routes/Payment'
 import authRoutes from './routes/AuthRoutes';
+import historyRoutes from './routes/HistoryRoutes';
 import googleRoutes from './routes/auth'
 import leadRoutes from './routes/LeadRoutes';
 import profileRoutes from './routes/Profile';
@@ -34,7 +35,7 @@ app.use('/api/properties', propertyRoutes);
 app.use('/api/beds', bedRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/leads', leadRoutes);
-
+app.use('/api', historyRoutes);
 // Basic root route
 app.get("/", (req, res) => {
   res.send("FriendlyAbode API is running!");
