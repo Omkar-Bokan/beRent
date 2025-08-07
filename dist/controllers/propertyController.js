@@ -16,7 +16,7 @@ const fs_1 = __importDefault(require("fs"));
 // --- Multer Configuration ---
 const uploadsDir = path_1.default.join(__dirname, '../../uploads'); // Adjust path as needed
 if (!fs_1.default.existsSync(uploadsDir)) {
-    fs_1.default.mkdirSync(uploadsDir, { recursive: true }); // Ensure directory exists, create recursively if needed
+    fs_1.default.mkdirSync(uploadsDir, { recursive: true });
 }
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {

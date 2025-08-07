@@ -49,7 +49,8 @@ app.get("/", (req, res) => {
 // Global Error Handler (Optional but Recommended)
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).json ({ message: "Something broke!", error: err.message });;
+ 
 });
 
 
