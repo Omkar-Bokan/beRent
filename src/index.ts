@@ -19,7 +19,12 @@ connectToMongo();
 
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// app.use(cors());
+app.use(require('cors')({
+  origin: '*', // or restrict to your firebase domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'ngrok-skip-browser-warning']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/public", express.static(path.join(__dirname, "data")));
