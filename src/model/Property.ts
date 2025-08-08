@@ -16,7 +16,7 @@ export interface IProperty extends Document {
   status: 'active'| 'inactive'| 'maintenance'| 'full'| 'available soon';
   description: string;
   amenities: string[];
-  images: string[];
+  images: any[];
   area?: string;
   type?: any; // Consider more specific types if possible
   rating?: any;
@@ -43,7 +43,10 @@ const PropertySchema: Schema<IProperty> = new mongoose.Schema({
   status: { type: String, required: true, enum: ['active', 'inactive', 'maintenance', 'full', 'available soon'], default: 'active' },
   description: { type: String, required: true },
   amenities: { type: [String], default: [] },
-  images: { type: [String], default: [] },
+  images: [{
+    fileId: { type: String, required: true },
+    url: { type: String, required: true }
+  }],
   area: { type: String },
   type: { type: Schema.Types.Mixed },
   rating: { type: Schema.Types.Mixed },
