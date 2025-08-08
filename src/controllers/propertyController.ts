@@ -601,7 +601,7 @@ import { Bed } from '../model/beds';
 import multer from 'multer';
 import ImageKit from "imagekit";
 import dotenv from "dotenv";
-import { UploadResponse, BulkDeleteFilesResponse } from "imagekit/dist/libs/interfaces";
+import { UploadResponse } from "imagekit/dist/libs/interfaces";
 
 dotenv.config();
 
@@ -610,6 +610,7 @@ const imagekit = new ImageKit({
   privateKey: process.env.IMAGE_KIT_PRIVATE_KEY || "",
   urlEndpoint: process.env.IMAGE_KIT_URL_ENDPOINT || "",
 });
+
 
 // Multer setup for in-memory storage
 export const upload = multer({
@@ -963,7 +964,7 @@ export const updateProperty = async (req: Request, res: Response) => {
     }
 
     if (finalImages.length > 3) {
-      return res.status(400).json({ success: false, message: "Maximum 3 images allowed in total." });
+       res.status(400).json({ success: false, message: "Maximum 3 images allowed in total." });
     }
 
     // Identify images to delete from ImageKit

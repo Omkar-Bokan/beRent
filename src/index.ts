@@ -22,8 +22,8 @@ const PORT = process.env.PORT || 5000;
 // app.use(cors());
 app.use(require('cors')({
   origin: '*', // or restrict to your firebase domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'ngrok-skip-browser-warning']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'ngrok-skip-browser-warning','Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

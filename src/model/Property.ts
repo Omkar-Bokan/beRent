@@ -18,7 +18,7 @@ export interface IProperty extends Document {
   amenities: string[];
   images: any[];
   area?: string;
-  type?: any; // Consider more specific types if possible
+  type?: any; 
   rating?: any;
   reviews?: any;
   owner?: string;
